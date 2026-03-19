@@ -6,7 +6,7 @@ public class DatabaseInitializer
 {
     private readonly string _dbPath;
 
-    public DatabaseInitializer(string databaseFileName = "timeline.db")
+    public DatabaseInitializer(string databaseFileName = "legal.db")
     {
         _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, databaseFileName);
     }
@@ -55,6 +55,8 @@ public class DatabaseInitializer
                 CREATE TABLE IF NOT EXISTS Legislation (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL
+                    meaning_text TEXT
+
                 );
 
                 -- ============================

@@ -77,15 +77,22 @@ public class DatabaseHelper
     // ============================
     // Legislation
     // ============================
-    public void AddLegislation(string name)
+
+    // New method with meaning_text
+    public void AddLegislation(string name, string meaningText)
     {
         using (var conn = GetConnection())
         {
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO Legislation (name) VALUES (@name)";
+                cmd.CommandText = @"
+                    INSERT INTO Legislation (name, meaning_text)
+                    VALUES (@name, @meaning)";
+
                 cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@meaning", meaningText);
+
                 cmd.ExecuteNonQuery();
             }
         }
