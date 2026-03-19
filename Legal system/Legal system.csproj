@@ -71,6 +71,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data entry\EvidenceEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Data entry\EvidenceEntry.Designer.cs">
+      <DependentUpon>EvidenceEntry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data entry\LegislationEntry.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,6 +105,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Data entry\EvidenceEntry.resx">
+      <DependentUpon>EvidenceEntry.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Data entry\LegislationEntry.resx">
       <DependentUpon>LegislationEntry.cs</DependentUpon>
     </EmbeddedResource>
