@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaseDataLoader.cs" />
     <Compile Include="Data entry\EvidenceEntry.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,12 +90,19 @@
     <Compile Include="Data entry\RespondentEntry.Designer.cs">
       <DependentUpon>RespondentEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data entry\TimelineEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Data entry\TimelineEntry.Designer.cs">
+      <DependentUpon>TimelineEntry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data entry\TypeEntry.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Data entry\TypeEntry.Designer.cs">
       <DependentUpon>TypeEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataClasses.cs" />
     <Compile Include="DBB logic\DatabaseHelper.cs" />
     <Compile Include="DBB logic\DatabaseInitializer.cs" />
     <Compile Include="Form1.cs">
@@ -114,8 +122,14 @@
     <EmbeddedResource Include="Data entry\RespondentEntry.resx">
       <DependentUpon>RespondentEntry.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Data entry\TimelineEntry.resx">
+      <DependentUpon>TimelineEntry.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Data entry\TypeEntry.resx">
       <DependentUpon>TypeEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

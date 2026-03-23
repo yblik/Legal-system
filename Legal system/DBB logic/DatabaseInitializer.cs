@@ -60,39 +60,20 @@ public class DatabaseInitializer
                 );
 
                 -- ============================
-                -- Case Events (formerly Timeline)
+                -- Timeline events
                 -- ============================
 
                 CREATE TABLE IF NOT EXISTS CaseEvent (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     year INTEGER NOT NULL,
-                    evidence_id INTEGER NOT NULL,
+                -- respondent encoded index (r2,r4,r8)
                     respondent_part INTEGER NOT NULL,
+
+                --  a 2D array, each row are respondent parts, each column are legislation
+                -- [ [L1,L2,L3], [L1], [L1,L2] ] -> 3  respondents here
+                    evidence_id INTEGER NOT NULL,
+
                     FOREIGN KEY (evidence_id) REFERENCES Evidence(id)
-                );
-
-                -- ============================
-                -- CaseEvent ↔ Respondent (many-to-many)
-                -- ============================
-
-                CREATE TABLE IF NOT EXISTS CaseEventRespondent (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    case_event_id INTEGER NOT NULL,
-                    respondent_id INTEGER NOT NULL,
-                    FOREIGN KEY (case_event_id) REFERENCES CaseEvent(id),
-                    FOREIGN KEY (respondent_id) REFERENCES Respondent(id)
-                );
-
-                -- ============================
-                -- CaseEvent ↔ Legislation (many-to-many)
-                -- ============================
-
-                CREATE TABLE IF NOT EXISTS CaseEventLegislation (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    case_event_id INTEGER NOT NULL,
-                    legislation_id INTEGER NOT NULL,
-                    FOREIGN KEY (case_event_id) REFERENCES CaseEvent(id),
-                    FOREIGN KEY (legislation_id) REFERENCES Legislation(id)
                 );
 ";
 

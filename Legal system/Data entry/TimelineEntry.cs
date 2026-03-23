@@ -7,20 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Legal_system.Data_entry;
 
-namespace Legal_system
+namespace Legal_system.Data_entry
 {
-    public partial class Form1 : Form
+    public partial class TimelineEntry : Form
     {
-        public Form1()
+        public TimelineEntry()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void tabPage1_Click(object sender, EventArgs e)
         {
-            new EvidenceEntry().Show();
 
         }
     }
