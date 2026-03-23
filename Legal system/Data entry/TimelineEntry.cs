@@ -38,6 +38,12 @@ namespace Legal_system.Data_entry
             // Set up tab 1 — designer controls already exist, just wire them up
             respondentLegislation.Add(new List<int>());
             AttachPickerToTab(tabPage1, 0);
+
+            // Simulate clicking Add Respondent on load to create Respondent 1 tab
+            AddRespondentBtn_Click(null, EventArgs.Empty);
+
+            // Remove the designer base tab
+            tabControl1.TabPages.Remove(tabPage1);
         }
 
         private void AttachPickerToTab(TabPage page, int respondentIndex)
