@@ -8,48 +8,194 @@ namespace Legal_system.Data_entry
 {
     public partial class TimelineEntry : Form
     {
-        private LegislationPicker legislationPicker;
+        private List<List<int>> respondentLegislation = new List<List<int>>();
+
+        private Dictionary<int, string> legislationMap = new Dictionary<int, string>()
+        {
+            { 1, "Health & Safety Act" },
+            { 2, "Employment Rights Act" },
+            { 3, "Equality Act" },
+            { 4, "Data Protection Act 2" },
+            { 5, "Data Protection Act 3" },
+            { 6, "Data Protection Act 4" },
+            { 7, "Data Protection Act 5" },
+            { 8, "Data Protection Act 6" }
+        };
 
         public TimelineEntry()
         {
             InitializeComponent();
 
-            legislationPicker = new LegislationPicker();
-            legislationPicker.Location = new Point(350, 60);
-            legislationPicker.Width = 200;
-            legislationPicker.SelectionChanged += (s, e) =>
-            {
-                var names = legislationPicker.GetSelectedNames();
-                textBox2.Text = names.Count == 0 ? "(none selected)" : string.Join(", ", names);
-            };
+            // Add Respondent button placed below the TabControl
+            var addRespondentBtn = new Button();
+            addRespondentBtn.Text = "+ Add Respondent";
+            addRespondentBtn.AutoSize = true;
+            addRespondentBtn.Location = new Point(tabControl1.Left, tabControl1.Bottom + 8);
+            addRespondentBtn.Click += AddRespondentBtn_Click;
+            this.Controls.Add(addRespondentBtn);
+            addRespondentBtn.BringToFront();
 
-            legislationPicker.LoadFromMap(new Dictionary<int, string>()
-            {
-                { 1, "Health & Safety Act" },
-                { 2, "Employment Rights Act" },
-                { 3, "Equality Act" },
-                { 4, "Data Protection Act 2" },
-                { 5, "Data Protection Act 3" },
-                { 6, "Data Protection Act 4" },
-                { 7, "Data Protection Act 5" },
-                { 8, "Data Protection Act 6" }
-            });
-
-            tabPage1.Controls.Add(legislationPicker);
+            // Set up tab 1 — designer controls already exist, just wire them up
+            respondentLegislation.Add(new List<int>());
+            AttachPickerToTab(tabPage1, 0);
         }
 
+        private void AttachPickerToTab(TabPage page, int respondentIndex)
+        {
+            if (respondentIndex > 0)
+            {
+                // ── New tabs: recreate all designer controls manually ──
+
+                // Remove respondent button
+                var closeBtn = new Button();
+                closeBtn.Text = "✕ Remove This Respondent";
+                closeBtn.AutoSize = true;
+                closeBtn.Location = new Point(10, 5);
+                closeBtn.FlatStyle = FlatStyle.Flat;
+                closeBtn.BackColor = Color.FromArgb(255, 220, 220);
+                closeBtn.Tag = page;
+                closeBtn.Click += (s, e) =>
+                {
+                    var targetPage = (TabPage)((Button)s).Tag;
+                    int idx = tabControl1.TabPages.IndexOf(targetPage);
+                    if (idx >= 0)
+                    {
+                        respondentLegislation.RemoveAt(idx);
+                        tabControl1.TabPages.Remove(targetPage);
+                        RenumberTabs();
+                    }
+                };
+                page.Controls.Add(closeBtn);
+
+                // Enter Respondent dropdown (mirrors comboBox2)
+                var respondentDropdown = new ComboBox();
+                respondentDropdown.Location = new Point(10, 35);
+                respondentDropdown.Width = 180;
+                respondentDropdown.DropDownStyle = ComboBoxStyle.DropDownList;
+                // Populate with same items as comboBox2
+                foreach (var item in comboBox2.Items)
+                    respondentDropdown.Items.Add(item);
+                page.Controls.Add(respondentDropdown);
+
+                // Legislation list label (mirrors label2)
+                var listLabel = new Label();
+                listLabel.Text = "Legislation list:";
+                listLabel.Location = new Point(10, 70);
+                listLabel.AutoSize = true;
+                page.Controls.Add(listLabel);
+
+                // Legislation search label (mirrors label3)
+                var searchLabel = new Label();
+                searchLabel.Text = "Legislation search:";
+                searchLabel.Location = new Point(355, 40);
+                searchLabel.AutoSize = true;
+                page.Controls.Add(searchLabel);
+
+                // Multiline readonly TextBox to display selected legislation names (mirrors textBox2)
+                var legDisplay = new TextBox();
+                legDisplay.Location = new Point(10, 90);
+                legDisplay.Size = new Size(310, 120);
+                legDisplay.Multiline = true;
+                legDisplay.ReadOnly = true;
+                legDisplay.ScrollBars = ScrollBars.Vertical;
+                legDisplay.BackColor = SystemColors.Window;
+                page.Controls.Add(legDisplay);
+
+                // Remove last legislation button (mirrors button2)
+                var removeBtn = new Button();
+                removeBtn.Text = "Remove last legislation";
+                removeBtn.Location = new Point(355, 175);
+                removeBtn.AutoSize = true;
+                removeBtn.Click += (s, e) =>
+                {
+                    while (respondentLegislation.Count <= respondentIndex)
+                        respondentLegislation.Add(new List<int>());
+
+                    if (respondentLegislation[respondentIndex].Count > 0)
+                    {
+                        respondentLegislation[respondentIndex].RemoveAt(respondentLegislation[respondentIndex].Count - 1);
+                        legDisplay.Text = string.Join(Environment.NewLine,
+                            respondentLegislation[respondentIndex].Select(id => legislationMap[id]));
+                    }
+                };
+                page.Controls.Add(removeBtn);
+
+                // Legislation picker
+                var picker = new LegislationPicker();
+                picker.Location = new Point(350, 60);
+                picker.Width = 400;
+                picker.LoadFromMap(legislationMap);
+
+                // Capture the index at creation time — do NOT use TabPages.IndexOf(page) inside the lambda
+                int capturedIndex = respondentIndex;
+
+                picker.SelectionChanged += (s, e) =>
+                {
+                    // Grow the list if needed (safety net)
+                    while (respondentLegislation.Count <= capturedIndex)
+                        respondentLegislation.Add(new List<int>());
+
+                    respondentLegislation[capturedIndex] = picker.GetSelectedIds();
+                    legDisplay.Text = string.Join(Environment.NewLine, picker.GetSelectedNames());
+                };
+                page.Controls.Add(picker);
+            }
+            else
+            {
+                // ── Tab 1: designer controls already exist, just wire them up ──
+
+                button2.Click += (s, e) =>
+                {
+                    if (respondentLegislation[0].Count > 0)
+                    {
+                        respondentLegislation[0].RemoveAt(respondentLegislation[0].Count - 1);
+                        textBox2.Text = string.Join(Environment.NewLine,
+                            respondentLegislation[0].Select(id => legislationMap[id]));
+                    }
+                };
+
+                var picker = new LegislationPicker();
+                picker.Location = new Point(350, 60);
+                picker.Width = 400;
+                picker.LoadFromMap(legislationMap);
+                picker.SelectionChanged += (s, e) =>
+                {
+                    while (respondentLegislation.Count <= respondentIndex)
+                        respondentLegislation.Add(new List<int>());
+
+                    respondentLegislation[respondentIndex] = picker.GetSelectedIds();
+                    textBox2.Text = string.Join(Environment.NewLine, picker.GetSelectedNames()); // textBox2 not legDisplay
+                };
+                tabPage1.Controls.Add(picker);
+            }
+        }
+
+        private void AddRespondentBtn_Click(object sender, EventArgs e)
+        {
+            int newIndex = tabControl1.TabPages.Count;
+            var newPage = new TabPage($"Respondent {newIndex + 1}");
+            respondentLegislation.Add(new List<int>());
+            tabControl1.TabPages.Add(newPage);
+            AttachPickerToTab(newPage, newIndex);
+            tabControl1.SelectedTab = newPage;
+        }
+
+        private void RenumberTabs()
+        {
+            for (int i = 0; i < tabControl1.TabPages.Count; i++)
+                tabControl1.TabPages[i].Text = $"Respondent {i + 1}";
+        }
+
+        // ── All original stub handlers preserved to keep Designer happy ──
         private void tabPage1_Click(object sender, EventArgs e) { }
         private void label2_Click(object sender, EventArgs e) { }
-        //label2
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        private void textBox2_TextChanged(object sender, EventArgs e) { }
         private void button2_Click(object sender, EventArgs e)
         {
-            //delete last entry but nothins here so add it
+            // delete last entry but nothing here so add it
         }
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void label3_Click(object sender, EventArgs e) { }
     }
 
     public class LegislationPicker : UserControl
