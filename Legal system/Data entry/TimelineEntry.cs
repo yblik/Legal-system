@@ -15,12 +15,12 @@ namespace Legal_system.Data_entry
             InitializeComponent();
 
             legislationPicker = new LegislationPicker();
-            legislationPicker.Location = new Point(20, 60);
-            legislationPicker.Width = 400;
+            legislationPicker.Location = new Point(350, 60);
+            legislationPicker.Width = 200;
             legislationPicker.SelectionChanged += (s, e) =>
             {
                 var names = legislationPicker.GetSelectedNames();
-                label2.Text = names.Count == 0 ? "(none selected)" : string.Join(", ", names);
+                textBox2.Text = names.Count == 0 ? "(none selected)" : string.Join(", ", names);
             };
 
             legislationPicker.LoadFromMap(new Dictionary<int, string>()
@@ -28,7 +28,11 @@ namespace Legal_system.Data_entry
                 { 1, "Health & Safety Act" },
                 { 2, "Employment Rights Act" },
                 { 3, "Equality Act" },
-                { 4, "Data Protection Act" }
+                { 4, "Data Protection Act 2" },
+                { 5, "Data Protection Act 3" },
+                { 6, "Data Protection Act 4" },
+                { 7, "Data Protection Act 5" },
+                { 8, "Data Protection Act 6" }
             });
 
             tabPage1.Controls.Add(legislationPicker);
@@ -36,6 +40,16 @@ namespace Legal_system.Data_entry
 
         private void tabPage1_Click(object sender, EventArgs e) { }
         private void label2_Click(object sender, EventArgs e) { }
+        //label2
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //delete last entry but nothins here so add it
+        }
     }
 
     public class LegislationPicker : UserControl
