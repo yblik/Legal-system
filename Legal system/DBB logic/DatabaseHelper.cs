@@ -1,8 +1,8 @@
 ﻿using Microsoft.Data.Sqlite;
-using System;
-
 using Microsoft.Data.Sqlite;
 using System;
+using System;
+using System.Collections.Generic;
 
 public class DatabaseHelper
 {
@@ -102,7 +102,7 @@ public class DatabaseHelper
     // ============================
     // CaseEvent
     // ============================
-    public int AddCaseEvent(int year, int evidenceId, int respondentPart)
+    public int AddCaseEvent(int year, int evidenceId, string respondentsJson, string respondentsLegalJson)
     {
         using (var conn = GetConnection())
         {
@@ -110,13 +110,14 @@ public class DatabaseHelper
             using (var cmd = conn.CreateCommand())
             {
                 cmd.CommandText = @"
-                    INSERT INTO CaseEvent (year, evidence_id, respondent_part)
-                    VALUES (@year, @evidence, @part);
-                    SELECT last_insert_rowid();";
+                INSERT INTO CaseEvent (year, evidence_id, respondents, respondentsLegal)
+                VALUES (@year, @evidence, @respondents, @respondentsLegal);
+                SELECT last_insert_rowid();";
 
                 cmd.Parameters.AddWithValue("@year", year);
                 cmd.Parameters.AddWithValue("@evidence", evidenceId);
-                cmd.Parameters.AddWithValue("@part", respondentPart);
+                cmd.Parameters.AddWithValue("@respondents", respondentsJson);
+                cmd.Parameters.AddWithValue("@respondentsLegal", respondentsLegalJson);
 
                 long id = (long)cmd.ExecuteScalar();
                 return (int)id;
@@ -125,49 +126,59 @@ public class DatabaseHelper
     }
 
     // ============================
-    // CaseEventRespondent
+    // Load methods for ComboBox population
     // ============================
-    public void AddCaseEventRespondent(int caseEventId, int respondentId)
+
+    public Dictionary<int, string> GetRespondents()
     {
+        var map = new Dictionary<int, string>();
         using (var conn = GetConnection())
         {
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"
-                    INSERT INTO CaseEventRespondent (case_event_id, respondent_id)
-                    VALUES (@event, @respondent)";
-
-                cmd.Parameters.AddWithValue("@event", caseEventId);
-                cmd.Parameters.AddWithValue("@respondent", respondentId);
-
-                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT id, name FROM Respondent";
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                        map[reader.GetInt32(0)] = reader.GetString(1);
             }
         }
+        return map;
     }
 
-    // ============================
-    // CaseEventLegislation
-    // ============================
-    public void AddCaseEventLegislation(int caseEventId, int legislationId)
+    public Dictionary<int, string> GetLegislation()
     {
+        var map = new Dictionary<int, string>();
         using (var conn = GetConnection())
         {
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = @"
-                    INSERT INTO CaseEventLegislation (case_event_id, legislation_id)
-                    VALUES (@event, @legislation)";
-
-                cmd.Parameters.AddWithValue("@event", caseEventId);
-                cmd.Parameters.AddWithValue("@legislation", legislationId);
-
-                cmd.ExecuteNonQuery();
+                cmd.CommandText = "SELECT id, name FROM Legislation";
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                        map[reader.GetInt32(0)] = reader.GetString(1);
             }
         }
+        return map;
     }
 
+    public Dictionary<int, string> GetEvidence()
+    {
+        var map = new Dictionary<int, string>();
+        using (var conn = GetConnection())
+        {
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT id, point FROM Evidence";
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                        map[reader.GetInt32(0)] = reader.GetString(1);
+            }
+        }
+        return map;
+    }
     public class EvidenceType
     {
         public int Id { get; set; }

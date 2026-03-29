@@ -11,23 +11,45 @@ namespace Legal_system.Data_entry
 {
     public partial class TimelineEntry : Form
     {
+        // At the top of the class, replace the hardcoded legislationMap and add db instance
+        private DatabaseHelper db = new DatabaseHelper("timeline.db");
+
+        // Remove the hardcoded legislationMap declaration and replace with:
+        private Dictionary<int, string> legislationMap;
+        private Dictionary<int, string> respondentMap;
+        private Dictionary<int, string> evidenceMap;
         private List<List<int>> respondentLegislation = new List<List<int>>();
 
-        private Dictionary<int, string> legislationMap = new Dictionary<int, string>()
-        {
-            { 1, "Health & Safety Act" },
-            { 2, "Employment Rights Act" },
-            { 3, "Equality Act" },
-            { 4, "Data Protection Act 2" },
-            { 5, "Data Protection Act 3" },
-            { 6, "Data Protection Act 4" },
-            { 7, "Data Protection Act 5" },
-            { 8, "Data Protection Act 6" }
-        };
+        //private Dictionary<int, string> legislationMap = new Dictionary<int, string>()
+        //{
+        //    { 1, "Health & Safety Act" },
+        //    { 2, "Employment Rights Act" },
+        //    { 3, "Equality Act" },
+        //    { 4, "Data Protection Act 2" },
+        //    { 5, "Data Protection Act 3" },
+        //    { 6, "Data Protection Act 4" },
+        //    { 7, "Data Protection Act 5" },
+        //    { 8, "Data Protection Act 6" }
+        //};
 
         public TimelineEntry()
         {
             InitializeComponent();
+
+            // Load all maps from DB
+            legislationMap = db.GetLegislation();
+            respondentMap = db.GetRespondents();
+            evidenceMap = db.GetEvidence();
+
+            // Populate comboBox2 (respondents)
+            comboBox2.Items.Clear();
+            foreach (var kv in respondentMap)
+                comboBox2.Items.Add(kv.Value);
+
+            // Populate comboBox1 (evidence)
+            comboBox1.Items.Clear();
+            foreach (var kv in evidenceMap)
+                comboBox1.Items.Add(kv.Value);
 
             var addRespondentBtn = new Button();
             addRespondentBtn.Text = "+ Add Respondent";
@@ -172,8 +194,65 @@ namespace Legal_system.Data_entry
         private void label2_Click(object sender, EventArgs e) { }
         private void textBox2_TextChanged(object sender, EventArgs e) { }
         private void button2_Click(object sender, EventArgs e) { }
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) { }
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e) { } // Respondent dropdown: comboBox2
         private void label3_Click(object sender, EventArgs e) { }
+
+        /// <summary>
+        /// Save to db
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Year
+            if (!int.TryParse(textBox2.Text, out int year))
+            {
+                MessageBox.Show("Please enter a valid year.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Evidence ID from comboBox1
+            int evidenceId = evidenceMap.Keys.ElementAtOrDefault(comboBox1.SelectedIndex);
+
+            // Respondents CSV from each tab's comboBox2-populated dropdown
+            var respondentNames = new List<string>();
+            for (int i = 0; i < tabControl1.TabPages.Count; i++)
+            {
+                TabPage page = tabControl1.TabPages[i];
+                var dropdown = page.Controls.OfType<ComboBox>().FirstOrDefault();
+                string name = dropdown?.SelectedItem?.ToString() ?? "";
+                respondentNames.Add(name);
+            }
+            string respondentsCSV = string.Join(",", respondentNames);
+
+            // 2D legislation list per respondent
+            var allLegislation = new List<List<string>>();
+            for (int i = 0; i < respondentLegislation.Count; i++)
+            {
+                List<string> legNames = respondentLegislation[i]
+                    .Select(id => legislationMap[id])
+                    .ToList();
+                allLegislation.Add(legNames);
+            }
+            string respondentsLegalString = string.Join("|", allLegislation
+                .Select(group => string.Join(",", group)));
+
+            // Save
+            try
+            {
+                int newEventId = db.AddCaseEvent(year, evidenceId, respondentsCSV, respondentsLegalString);
+                MessageBox.Show($"Saved (ID: {newEventId})", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //evidence combo drop down: comboBox1
+        }
     }
 
     public class LegislationPicker : UserControl

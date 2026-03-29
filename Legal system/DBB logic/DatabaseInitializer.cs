@@ -8,7 +8,8 @@ public class DatabaseInitializer
 
     public DatabaseInitializer(string databaseFileName = "legal.db")
     {
-        _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, databaseFileName);
+        var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        _dbPath = Path.Combine(desktop, databaseFileName);
     }
 
     public void Initialize()
@@ -53,9 +54,10 @@ public class DatabaseInitializer
                 );
 
                 CREATE TABLE IF NOT EXISTS Legislation (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL
-                    meaning_text TEXT
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                meaning_text TEXT
+            );
 
                 );
 
@@ -66,12 +68,16 @@ public class DatabaseInitializer
                 CREATE TABLE IF NOT EXISTS CaseEvent (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     year INTEGER NOT NULL,
+                    evidence_id INTEGER NOT NULL,
+
+                --Tab system
                 -- respondent encoded index (r2,r4,r8)
-                    respondent_part INTEGER NOT NULL,
+                    respondents STRING NOT NULL,
 
                 --  a 2D array, each row are respondent parts, each column are legislation
                 -- [ [L1,L2,L3], [L1], [L1,L2] ] -> 3  respondents here
-                    evidence_id INTEGER NOT NULL,
+
+                    respondentsLegal STRING NOT NULL,
 
                     FOREIGN KEY (evidence_id) REFERENCES Evidence(id)
                 );

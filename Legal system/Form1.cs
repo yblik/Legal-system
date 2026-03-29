@@ -23,5 +23,26 @@ namespace Legal_system
             new TimelineEntry().Show();
 
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            new EvidenceEntry().Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            new LegislationEntry().Show();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            new RespondentEntry
+                ().Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            new TypeEntry().Show();
+        }
     }
 }
