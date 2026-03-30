@@ -12,7 +12,7 @@ namespace Legal_system.Data_entry
     public partial class TimelineEntry : Form
     {
         // At the top of the class, replace the hardcoded legislationMap and add db instance
-        private DatabaseHelper db = new DatabaseHelper("timeline.db");
+        private DatabaseHelper db = new DatabaseHelper("legal.db");
 
         // Remove the hardcoded legislationMap declaration and replace with:
         private Dictionary<int, string> legislationMap;
