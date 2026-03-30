@@ -56,7 +56,6 @@ public class DatabaseInitializer
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 meaning_text TEXT
-            );
 
                 );
 

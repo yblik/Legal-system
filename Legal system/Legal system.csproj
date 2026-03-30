@@ -69,12 +69,7 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Numerics" />
-```
 
-**4. Delete bin and obj:**
-```
-	rd /s /q bin
-	rd /s /q obj
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaseDataLoader.cs" />
