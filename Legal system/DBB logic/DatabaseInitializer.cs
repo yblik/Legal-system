@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Data.SQLite;
 using System;
 using System.IO;
 
@@ -8,15 +8,14 @@ public class DatabaseInitializer
 
     public DatabaseInitializer(string databaseFileName = "legal.db")
     {
-        var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        _dbPath = Path.Combine(desktop, databaseFileName);
+        _dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, databaseFileName);
     }
 
     public void Initialize()
     {
         bool createNew = !File.Exists(_dbPath);
 
-        using (var connection = new SqliteConnection("Data Source=" + _dbPath))
+        using (var connection = new SQLiteConnection("Data Source=" + _dbPath))
         {
             connection.Open();
 

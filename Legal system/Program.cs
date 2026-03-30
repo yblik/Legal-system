@@ -14,6 +14,13 @@ namespace Legal_system
         [STAThread]
         static void Main()
         {
+            var db = new DatabaseInitializer
+                (); 
+
+            db.Initialize ();
+
+
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

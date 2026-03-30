@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using Microsoft.Data.Sqlite;
-using System;
+﻿using System.Data.SQLite;
 using System;
 using System.Collections.Generic;
 
@@ -13,9 +11,14 @@ public class DatabaseHelper
         _connectionString = "Data Source=" + dbPath;
     }
 
-    private SqliteConnection GetConnection()
+    //private SqliteConnection GetConnection()
+    //{
+    //    return new SqliteConnection(_connectionString);
+    //}
+
+    private SQLiteConnection GetConnection()
     {
-        return new SqliteConnection(_connectionString);
+        return new SQLiteConnection(_connectionString);
     }
 
     // ============================

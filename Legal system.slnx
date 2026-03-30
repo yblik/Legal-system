@@ -1,3 +1,9 @@
 <Solution>
-  <Project Path="Legal system/Legal system.csproj" Id="26c1eaf9-367c-4290-8074-bf5c00d84213" />
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="Legal system/Legal system.csproj" Id="26c1eaf9-367c-4290-8074-bf5c00d84213">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>
