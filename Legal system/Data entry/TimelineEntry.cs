@@ -205,9 +205,10 @@ namespace Legal_system.Data_entry
         private void button1_Click(object sender, EventArgs e)
         {
             // Year
-            if (!int.TryParse(textBox2.Text, out int year))
+            if (!int.TryParse(textBox1.Text, out int year))
             {
                 MessageBox.Show("Please enter a valid year.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                //MessageBox.Show($"'{textBox1.Text}'");
                 return;
             }
 
@@ -252,6 +253,11 @@ namespace Legal_system.Data_entry
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             //evidence combo drop down: comboBox1
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
