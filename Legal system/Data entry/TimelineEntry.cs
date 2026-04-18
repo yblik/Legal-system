@@ -46,11 +46,24 @@ namespace Legal_system.Data_entry
             foreach (var kv in respondentMap)
                 comboBox2.Items.Add(kv.Value);
 
-            // Populate comboBox1 (evidence)
+            //// Populate comboBox1 (evidence)
+            //comboBox1.Items.Clear();
+            //foreach (var kv in evidenceMap)
+            //    comboBox1.Items.Add(kv.Value);
+
+            // In TimelineEntry() constructor, after populating comboBox1:
+            // In TimelineEntry constructor - replace the comboBox1 block:
             comboBox1.Items.Clear();
+            comboBox1.Items.Insert(0, "Select evidence...");
+            comboBox1.SelectedIndex = 0;
             foreach (var kv in evidenceMap)
                 comboBox1.Items.Add(kv.Value);
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox1.IntegralHeight = false;     // required
+            comboBox1.MaxDropDownItems = 1;       // force scrollbar logic
+            comboBox1.DropDownHeight = 120;       // visible height
 
+            comboBox1.Text = "Select evidence";
             var addRespondentBtn = new Button();
             addRespondentBtn.Text = "+ Add Respondent";
             addRespondentBtn.AutoSize = true;
@@ -290,9 +303,13 @@ namespace Legal_system.Data_entry
 
             suggestionList = new ListBox();
             suggestionList.Dock = DockStyle.Top;
-            suggestionList.Height = 120;
+            suggestionList.Height = 100;
+            suggestionList.ScrollAlwaysVisible = true;        // ← vertical always on
+            suggestionList.HorizontalScrollbar = true;        // ← horizontal always on
+            suggestionList.HorizontalExtent = 600;            // ← how far horizontal scrolls (tune to your longest legislation name)
             suggestionList.Visible = false;
             suggestionList.Click += SuggestionList_Click;
+            suggestionList.IntegralHeight = false;
             suggestionList.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter) SelectCurrent();
