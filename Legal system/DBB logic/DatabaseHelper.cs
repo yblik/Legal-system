@@ -182,6 +182,23 @@ public class DatabaseHelper
         }
         return map;
     }
+
+    public Dictionary<int, string> GetEvidence()
+    {
+        var map = new Dictionary<int, string>();
+        using (var conn = GetConnection())
+        {
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT id, point FROM Evidence";
+                using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
+                        map[reader.GetInt32(0)] = reader.GetString(1);
+            }
+        }
+        return map;
+    }
     public class EvidenceType
     {
         public int Id { get; set; }
