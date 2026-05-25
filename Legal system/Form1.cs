@@ -44,5 +44,10 @@ namespace Legal_system
         {
             new TypeEntry().Show();
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            new Timeline().Show();
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Legal_system
 {
-    internal class TimelineData
+    public class TimelineData
     {
         public string Year { get; set; }
         public int EvidenceID { get; set; } //to be encoded to and get point in code (not needed for filtering)
@@ -17,7 +17,7 @@ namespace Legal_system
         public string[] Respondents { get; set; } //to CSV decoded
 
         public string[] Legislation { get; set; } //to be | decoded then remain CSV -> fetched in code logic for searching
-        //NOTE. respondents searched through and must have legislations flagged via loops
+                                                  //NOTE. respondents searched through and must have legislations flagged via loops
 
         //public string[] LegislationDescription { get; set; } //to be found through legislation name and fetched in code logic for searching
         ////NOTE. via drop down
@@ -26,6 +26,11 @@ namespace Legal_system
 
         //public string FilePath { get; set; } //the file path from evidence
         //public string FilePathInfo { get; set; } //the location info from evidence
+
+        // Readable versions for the grid
+        public string RespondentsDisplay => string.Join(", ", Respondents);
+        public string LegislationDisplay => string.Join(", ", Legislation);
+
 
     }
 }

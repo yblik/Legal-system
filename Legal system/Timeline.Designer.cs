@@ -30,14 +30,15 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.TimelineTxt = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.TimelineGrid = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TimelineGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -53,8 +54,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.TimelineGrid);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.TimelineTxt);
             this.tabPage1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -64,21 +65,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Timeline";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // TimelineTxt
-            // 
-            this.TimelineTxt.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TimelineTxt.HideSelection = false;
-            this.TimelineTxt.Location = new System.Drawing.Point(24, 67);
-            this.TimelineTxt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.TimelineTxt.Multiline = true;
-            this.TimelineTxt.Name = "TimelineTxt";
-            this.TimelineTxt.ReadOnly = true;
-            this.TimelineTxt.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TimelineTxt.Size = new System.Drawing.Size(1159, 399);
-            this.TimelineTxt.TabIndex = 8;
-            this.TimelineTxt.Text = "listl\r\nllllll";
-            this.TimelineTxt.TextChanged += new System.EventHandler(this.TimelineTxt_TextChanged);
             // 
             // label1
             // 
@@ -104,6 +90,18 @@
             this.tabPage2.Text = "Filter";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(17, 17);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBox1.MaxDropDownItems = 2;
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(289, 48);
+            this.comboBox1.TabIndex = 13;
+            this.comboBox1.Text = "Select filter";
+            // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -116,17 +114,19 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // comboBox1
+            // TimelineGrid
             // 
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(17, 17);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBox1.MaxDropDownItems = 2;
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(289, 48);
-            this.comboBox1.TabIndex = 13;
-            this.comboBox1.Text = "Select filter";
+            this.TimelineGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.TimelineGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.TimelineGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.TimelineGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TimelineGrid.Location = new System.Drawing.Point(4, 5);
+            this.TimelineGrid.Name = "TimelineGrid";
+            this.TimelineGrid.RowHeadersWidth = 62;
+            this.TimelineGrid.RowTemplate.Height = 28;
+            this.TimelineGrid.Size = new System.Drawing.Size(1196, 466);
+            this.TimelineGrid.TabIndex = 10;
+            this.TimelineGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TimelineGrid_CellContentClick);
             // 
             // Timeline
             // 
@@ -140,6 +140,7 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.TimelineGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -148,10 +149,10 @@
 
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TextBox TimelineTxt;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.DataGridView TimelineGrid;
     }
 }

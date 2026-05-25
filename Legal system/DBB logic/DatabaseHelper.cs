@@ -1,6 +1,7 @@
 ﻿using System.Data.SQLite;
 using System;
 using System.Collections.Generic;
+using Legal_system;
 
 public class DatabaseHelper
 {
@@ -182,23 +183,55 @@ public class DatabaseHelper
         }
         return map;
     }
-
-    public Dictionary<int, string> GetEvidence()
+    public string GetEvidencePointById(int evidenceId)
     {
-        var map = new Dictionary<int, string>();
         using (var conn = GetConnection())
         {
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT id, point FROM Evidence";
-                using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
-                        map[reader.GetInt32(0)] = reader.GetString(1);
+                cmd.CommandText = "SELECT point FROM Evidence WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", evidenceId);
+
+                object result = cmd.ExecuteScalar();
+
+                return result?.ToString(); // returns null if not found
             }
         }
-        return map;
     }
+
+    public List<TimelineData> GetTimelineData()
+    {
+        var list = new List<TimelineData>();
+
+        using (var conn = GetConnection())
+        {
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT year, evidence_id, respondents, respondentsLegal FROM CaseEvent";
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var data = new TimelineData
+                        {
+                            Year = reader.GetInt32(0).ToString(),
+                            EvidenceID = reader.GetInt32(1),
+                            Respondents = reader.GetString(2).Split(','),
+                            Legislation = reader.GetString(3).Split(',')
+                        };
+
+                        list.Add(data);
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
+
     public class EvidenceType
     {
         public int Id { get; set; }
