@@ -51,13 +51,33 @@ namespace Legal_system
 
             TimelineGrid.DataSource = rows;
 
-            foreach (DataGridViewColumn col in TimelineGrid.Columns)
-            {
-                Console.WriteLine(col.Name);
-            }
+            // Disable autosizing for columns so manual widths work
+            TimelineGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             // Make EvidencePoint column wider
-            //TimelineGrid.Columns["EvidencePoint"].Width = 400;
+            var colEP = TimelineGrid.Columns["EvidencePoint"];
+            colEP.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colEP.Width = 400;
+
+            // Make Respondents column wider
+            var colResp = TimelineGrid.Columns["Respondents"];
+            colResp.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colResp.Width = 300;
+
+            // Make Legislation column wider
+            var colLeg = TimelineGrid.Columns["Legislation"];
+            colLeg.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            colLeg.Width = 300;
+
+            // Enable wrapping + auto row height
+            TimelineGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            TimelineGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
+            foreach (DataGridViewColumn colu in TimelineGrid.Columns)
+            {
+                Console.WriteLine(colu.Name);
+            }
+
         }
 
 
