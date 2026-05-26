@@ -43,10 +43,13 @@ namespace Legal_system
             var rows = TD.Select(x => new
             {
                 x.Year,
-                x.EvidenceID,
-                EvidencePoint = helper.GetEvidencePointById(x.EvidenceID),
+                x.Evidence,
+                x.EvidenceType,
+                EvidencePoint = helper.GetEvidencePointById(x.Evidence),
                 Respondents = x.RespondentsDisplay,
-                Legislation = x.LegislationDisplay
+                Legislation = string.Join(", ", x.Legislation.Select(l => l + " ⓘ")),
+                x.LegislationDescription,
+                x.Rating
             }).ToList();
 
             TimelineGrid.DataSource = rows;
@@ -76,6 +79,16 @@ namespace Legal_system
             foreach (DataGridViewColumn colu in TimelineGrid.Columns)
             {
                 Console.WriteLine(colu.Name);
+            }
+            foreach (DataGridViewRow row in TimelineGrid.Rows)
+            {
+                string desc = row.Cells["LegislationDescription"].Value?.ToString();
+
+                if (!string.IsNullOrWhiteSpace(desc))
+                {
+                    // Apply tooltip to the Legislation column
+                    row.Cells["Legislation"].ToolTipText = desc;
+                }
             }
 
         }

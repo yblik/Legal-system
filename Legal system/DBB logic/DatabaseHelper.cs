@@ -209,7 +209,19 @@ public class DatabaseHelper
             conn.Open();
             using (var cmd = conn.CreateCommand())
             {
-                cmd.CommandText = "SELECT year, evidence_id, respondents, respondentsLegal FROM CaseEvent";
+                cmd.CommandText = @"
+                SELECT 
+                    ce.year,
+                    ce.evidence_id,
+                    ce.respondents,
+                    ce.respondentsLegal,
+                    e.type,
+                    e.rating,
+                    l.meaning_text
+                FROM CaseEvent ce
+                JOIN Evidence e ON e.id = ce.evidence_id
+                LEFT JOIN Legislation l ON l.name = ce.respondentsLegal
+            ";
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -218,9 +230,24 @@ public class DatabaseHelper
                         var data = new TimelineData
                         {
                             Year = reader.GetInt32(0).ToString(),
-                            EvidenceID = reader.GetInt32(1),
+
+                            // Evidence is INT again
+                            Evidence = reader.GetInt32(1),
+
+                            // EvidenceType = ID (string)
+                            EvidenceType = reader.GetInt32(4).ToString(),
+
+                            // Respondents CSV → array
                             Respondents = reader.GetString(2).Split(','),
-                            Legislation = reader.GetString(3).Split(',')
+
+                            // Legislation CSV → array
+                            Legislation = reader.GetString(3).Split(','),
+
+                            // Legislation description
+                            LegislationDescription = reader.IsDBNull(6) ? "" : reader.GetString(6),
+
+                            // Rating from Evidence table
+                            Rating = reader.GetInt32(5)
                         };
 
                         list.Add(data);

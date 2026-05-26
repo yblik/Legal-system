@@ -9,9 +9,11 @@ namespace Legal_system
     public class TimelineData
     {
         public string Year { get; set; }
-        public int EvidenceID { get; set; } //to be encoded to and get point in code (not needed for filtering)
+        //public int EvidenceID { get; set; } //to be encoded to and get point in code (not needed for filtering)
 
-        public string EvidenceType { get; set; } //type from evidence 
+        public int Evidence { get; set; } //from case event
+
+        public string EvidenceType { get; set; } //to be found through evidence type id and fetched in code logic for searching
 
 
         public string[] Respondents { get; set; } //to CSV decoded
@@ -19,7 +21,10 @@ namespace Legal_system
         public string[] Legislation { get; set; } //to be | decoded then remain CSV -> fetched in code logic for searching
                                                   //NOTE. respondents searched through and must have legislations flagged via loops
 
-        //public string[] LegislationDescription { get; set; } //to be found through legislation name and fetched in code logic for searching
+        //to be like a drop down by limiting to one space with a '?    - desc'
+        public string LegislationDescription { get; set; } //to be found through legislation name and fetched in code logic for searching
+
+        public int Rating { get; set; } //the rating from evidence, to be encoded to and get point in code (not needed for filtering)
         ////NOTE. via drop down
         ///
         //public int EvidenceRating { get; set; } //the rating from evidence
