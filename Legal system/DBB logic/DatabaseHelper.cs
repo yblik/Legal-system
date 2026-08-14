@@ -42,7 +42,7 @@ public class DatabaseHelper
     // ============================
     // Evidence
     // ============================
-    public void AddEvidence(string point, int type, int rating, string filePath, string locationInfo)
+    public int AddEvidence(string point, int type, int rating, string filePath, string locationInfo)
     {
         using (var conn = GetConnection())
         {
@@ -50,8 +50,10 @@ public class DatabaseHelper
             using (var cmd = conn.CreateCommand())
             {
                 cmd.CommandText = @"
-                    INSERT INTO Evidence (point, type, rating, file_path, location_info)
-                    VALUES (@point, @type, @rating, @file, @loc)";
+                INSERT INTO Evidence (point, type, rating, file_path, location_info)
+                VALUES (@point, @type, @rating, @file, @loc);
+                SELECT last_insert_rowid();
+            ";
 
                 cmd.Parameters.AddWithValue("@point", point);
                 cmd.Parameters.AddWithValue("@type", type);
@@ -59,10 +61,11 @@ public class DatabaseHelper
                 cmd.Parameters.AddWithValue("@file", filePath);
                 cmd.Parameters.AddWithValue("@loc", locationInfo);
 
-                cmd.ExecuteNonQuery();
+                return Convert.ToInt32(cmd.ExecuteScalar());
             }
         }
     }
+
 
     // ============================
     // Respondent

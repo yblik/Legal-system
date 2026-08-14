@@ -21,8 +21,16 @@ namespace Legal_system.Data_entry
         {
             var helper = new DatabaseHelper("legal.db");
 
-            helper.AddEvidence
-                (textBox1.Text, comboBox1.SelectedIndex, trackBar1.Value, textBox2.Text, textBox3.Text);
+            int evidenceId = helper.AddEvidence(
+                textBox1.Text,
+                comboBox1.SelectedIndex,
+                trackBar1.Value,
+                textBox2.Text,
+                textBox3.Text
+            );
+
+            MessageBox.Show($"Evidence added with ID: {evidenceId}");
+
             new EvidenceEntry().Show();
             this.Close();
         }

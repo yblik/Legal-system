@@ -39,59 +39,73 @@ namespace Legal_system
 
             var helper = new DatabaseHelper("legal.db");
 
-            // Build display rows
-            var rows = TD.Select(x => new
+            var rows = TD.Select(x =>
             {
-                x.Year,
-                x.Evidence,
-                x.EvidenceType,
-                EvidencePoint = helper.GetEvidencePointById(x.Evidence),
-                Respondents = x.RespondentsDisplay,
-                Legislation = string.Join(", ", x.Legislation.Select(l => l + " ⓘ")),
-                x.LegislationDescription,
-                x.Rating
+                string ep = helper.GetEvidencePointById(x.Evidence);
+
+                // Split respondents by comma
+                var respondentGroups = x.RespondentsDisplay
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Split legislation groups by | (each respondent’s set)
+                var legislationGroups = x.LegislationDisplay
+                    .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+                string respondentsBlock = "";
+
+                for (int i = 0; i < respondentGroups.Length; i++)
+                {
+                    string resp = respondentGroups[i].Trim();
+                    respondentsBlock += $"• Respondent: {resp}\n";
+
+                    // Each respondent’s legislation list
+                    if (i < legislationGroups.Length)
+                    {
+                        var laws = legislationGroups[i]
+                            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (var law in laws)
+                        {
+                            respondentsBlock += $"    - {law.Trim()}\n";
+                        }
+                    }
+
+                    respondentsBlock += "\n";
+                }
+
+                string timelineText =
+                    $"Year: {x.Year}\n" +
+                    //$"Evidence: {x.Evidence}\n" +
+                    $"Evidence Point: {ep}\n\n" +
+                    $"{respondentsBlock}";
+
+                return new
+                {
+                    Timeline = timelineText.Trim()
+                };
             }).ToList();
 
             TimelineGrid.DataSource = rows;
 
-            // Disable autosizing for columns so manual widths work
-            TimelineGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            var col = TimelineGrid.Columns["Timeline"];
+            col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            col.Width = TimelineGrid.Width - 40;
 
-            // Make EvidencePoint column wider
-            var colEP = TimelineGrid.Columns["EvidencePoint"];
-            colEP.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colEP.Width = 400;
-
-            // Make Respondents column wider
-            var colResp = TimelineGrid.Columns["Respondents"];
-            colResp.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colResp.Width = 300;
-
-            // Make Legislation column wider
-            var colLeg = TimelineGrid.Columns["Legislation"];
-            colLeg.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            colLeg.Width = 300;
-
-            // Enable wrapping + auto row height
             TimelineGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             TimelineGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            TimelineGrid.RowHeadersVisible = false;
+            TimelineGrid.DefaultCellStyle.Font = new Font("Segoe UI", 10);
+            col.SortMode = DataGridViewColumnSortMode.NotSortable;
 
-            foreach (DataGridViewColumn colu in TimelineGrid.Columns)
-            {
-                Console.WriteLine(colu.Name);
-            }
-            foreach (DataGridViewRow row in TimelineGrid.Rows)
-            {
-                string desc = row.Cells["LegislationDescription"].Value?.ToString();
-
-                if (!string.IsNullOrWhiteSpace(desc))
-                {
-                    // Apply tooltip to the Legislation column
-                    row.Cells["Legislation"].ToolTipText = desc;
-                }
-            }
-
+            // Disable highlighting
+            TimelineGrid.ReadOnly = true;
+            TimelineGrid.SelectionMode = DataGridViewSelectionMode.CellSelect;
+            TimelineGrid.DefaultCellStyle.SelectionBackColor = TimelineGrid.DefaultCellStyle.BackColor;
+            TimelineGrid.DefaultCellStyle.SelectionForeColor = TimelineGrid.DefaultCellStyle.ForeColor;
+            TimelineGrid.ClearSelection();
         }
+
+
 
 
         //var filtered = TD.Where(x => x.Year == "2020").ToList();
