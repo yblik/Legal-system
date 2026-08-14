@@ -210,18 +210,18 @@ public class DatabaseHelper
             using (var cmd = conn.CreateCommand())
             {
                 cmd.CommandText = @"
-                SELECT 
-                    ce.year,
-                    ce.evidence_id,
-                    ce.respondents,
-                    ce.respondentsLegal,
-                    e.type,
-                    e.rating,
-                    l.meaning_text
-                FROM CaseEvent ce
-                JOIN Evidence e ON e.id = ce.evidence_id
-                LEFT JOIN Legislation l ON l.name = ce.respondentsLegal
-            ";
+                    SELECT 
+                        ce.year,
+                        ce.evidence_id,
+                        ce.respondents,
+                        ce.respondentsLegal,
+                        e.type,
+                        e.rating,
+                        l.meaning_text
+                    FROM CaseEvent ce
+                    LEFT JOIN Evidence e ON e.id = ce.evidence_id
+                    LEFT JOIN Legislation l ON l.name = ce.respondentsLegal
+                ";
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -231,27 +231,22 @@ public class DatabaseHelper
                         {
                             Year = reader.GetInt32(0).ToString(),
 
-                            // Evidence is INT again
-                            Evidence = reader.GetInt32(1),
+                            Evidence = reader.IsDBNull(1) ? 0 : reader.GetInt32(1),
 
-                            // EvidenceType = ID (string)
-                            EvidenceType = reader.GetInt32(4).ToString(),
+                            EvidenceType = reader.IsDBNull(4) ? "" : reader.GetInt32(4).ToString(),
 
-                            // Respondents CSV → array
-                            Respondents = reader.GetString(2).Split(','),
+                            Respondents = reader.IsDBNull(2) ? Array.Empty<string>() : reader.GetString(2).Split(','),
 
-                            // Legislation CSV → array
-                            Legislation = reader.GetString(3).Split(','),
+                            Legislation = reader.IsDBNull(3) ? Array.Empty<string>() : reader.GetString(3).Split(','),
 
-                            // Legislation description
                             LegislationDescription = reader.IsDBNull(6) ? "" : reader.GetString(6),
 
-                            // Rating from Evidence table
-                            Rating = reader.GetInt32(5)
+                            Rating = reader.IsDBNull(5) ? 0 : reader.GetInt32(5)
                         };
 
                         list.Add(data);
                     }
+
                 }
             }
         }
