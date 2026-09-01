@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Legal_system
 {
@@ -566,135 +567,31 @@ namespace Legal_system
             DisplayTimeline(TD);
         }
 
-        public void DisplayTimeline(
-            IEnumerable<TimelineData> source)
+        public void DisplayTimeline(IEnumerable<TimelineData> source)
         {
             if (source == null)
             {
-                TimelineGrid.DataSource =
-                    null;
-
+                TimelineGrid.DataSource = null;
+                TimelineGrid.Rows.Clear();
                 return;
             }
 
             DatabaseHelper helper =
                 new DatabaseHelper("legal.db");
 
-            var rows =
-                source
-                    .OrderBy(x => x.Year)
-                    .Select(x =>
-                    {
-                        string ep =
-                            helper.GetEvidencePointById(
-                                x.Evidence);
+            TimelineGrid.DataSource = null;
+            TimelineGrid.Rows.Clear();
+            TimelineGrid.Columns.Clear();
 
-                        // ------------------------------------------------
-                        // RESPONDENTS
-                        // ------------------------------------------------
+            TimelineGrid.ColumnCount = 1;
+            TimelineGrid.Columns[0].Name = "Timeline";
 
-                        string[] respondentGroups =
-                            (x.RespondentsDisplay ?? "")
-                                .Split(
-                                    new[] { ',' },
-                                    StringSplitOptions.RemoveEmptyEntries);
+            TimelineGrid.Columns[0].AutoSizeMode =
+                DataGridViewAutoSizeColumnMode.Fill;
 
-                        // ------------------------------------------------
-                        // LEGISLATION
-                        // ------------------------------------------------
-
-                        string[] legislationGroups =
-                            (x.LegislationDisplay ?? "")
-                                .Split(
-                                    new[] { '|' },
-                                    StringSplitOptions.RemoveEmptyEntries);
-
-                        string respondentsBlock =
-                            "";
-
-                        for (
-                            int i = 0;
-                            i < respondentGroups.Length;
-                            i++)
-                        {
-                            string resp =
-                                respondentGroups[i].Trim();
-
-                            respondentsBlock +=
-                                "• Respondent: " +
-                                resp +
-                                "\n";
-
-                            if (
-                                i <
-                                legislationGroups.Length)
-                            {
-                                string[] laws =
-                                    legislationGroups[i]
-                                        .Split(
-                                            new[] { ',' },
-                                            StringSplitOptions.RemoveEmptyEntries);
-
-                                foreach (
-                                    string law
-                                    in laws)
-                                {
-                                    respondentsBlock +=
-                                        "    - " +
-                                        law.Trim() +
-                                        "\n";
-                                }
-                            }
-
-                            respondentsBlock +=
-                                "\n";
-                        }
-
-                        string timelineText =
-                            "Year: " +
-                            x.Year +
-                            "\n" +
-                            "Evidence: " +
-                            x.Evidence +
-                            "\n" +
-                            "Evidence Point: " +
-                            ep +
-                            "\n\n" +
-                            respondentsBlock;
-
-                        return new
-                        {
-                            Timeline =
-                                timelineText.Trim()
-                        };
-                    })
-                    .ToList();
-
-            // --------------------------------------------------------
-            // GRID
-            // --------------------------------------------------------
-
-            TimelineGrid.DataSource =
-                rows;
-
-            if (
-                TimelineGrid.Columns["Timeline"]
-                != null)
-            {
-                DataGridViewColumn col =
-                    TimelineGrid.Columns["Timeline"];
-
-                col.AutoSizeMode =
-                    DataGridViewAutoSizeColumnMode.None;
-
-                col.Width =
-                    Math.Max(
-                        100,
-                        TimelineGrid.Width - 40);
-
-                col.SortMode =
-                    DataGridViewColumnSortMode.NotSortable;
-            }
+            TimelineGrid.ReadOnly = true;
+            TimelineGrid.AllowUserToAddRows = false;
+            TimelineGrid.RowHeadersVisible = false;
 
             TimelineGrid.DefaultCellStyle.WrapMode =
                 DataGridViewTriState.True;
@@ -702,29 +599,138 @@ namespace Legal_system
             TimelineGrid.AutoSizeRowsMode =
                 DataGridViewAutoSizeRowsMode.AllCells;
 
-            TimelineGrid.RowHeadersVisible =
-                false;
-
             TimelineGrid.DefaultCellStyle.Font =
-                new Font(
-                    "Segoe UI",
-                    10);
+                new Font("Segoe UI", 10);
 
-            TimelineGrid.ReadOnly =
-                true;
+            foreach (TimelineData x in source.OrderBy(x => x.Year))
+            {
+                string ep =
+                    helper.GetEvidencePointById(x.Evidence);
 
-            TimelineGrid.SelectionMode =
-                DataGridViewSelectionMode.CellSelect;
+                // --------------------------------------------------------
+                // RESPONDENTS / LEGISLATION
+                // --------------------------------------------------------
 
-            TimelineGrid.DefaultCellStyle.SelectionBackColor =
-                TimelineGrid.DefaultCellStyle.BackColor;
+                string[] respondentGroups =
+                    (x.RespondentsDisplay ?? "")
+                        .Split(
+                            new[] { ',' },
+                            StringSplitOptions.RemoveEmptyEntries);
 
-            TimelineGrid.DefaultCellStyle.SelectionForeColor =
-                TimelineGrid.DefaultCellStyle.ForeColor;
+                string[] legislationGroups =
+                    (x.LegislationDisplay ?? "")
+                        .Split(
+                            new[] { '|' },
+                            StringSplitOptions.RemoveEmptyEntries);
+
+                string respondentsBlock = "";
+
+                for (int i = 0;
+                     i < respondentGroups.Length;
+                     i++)
+                {
+                    respondentsBlock +=
+                        "• Respondent: " +
+                        respondentGroups[i].Trim() +
+                        "\n";
+
+                    if (i < legislationGroups.Length)
+                    {
+                        string[] laws =
+                            legislationGroups[i]
+                                .Split(
+                                    new[] { ',' },
+                                    StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (string law in laws)
+                        {
+                            respondentsBlock +=
+                                "    - " +
+                                law.Trim() +
+                                "\n";
+                        }
+                    }
+
+                    respondentsBlock += "\n";
+                }
+
+                // --------------------------------------------------------
+                // EVERYTHING EXCEPT FILES
+                // --------------------------------------------------------
+
+                string timelineText =
+                    "Year: " +
+                    x.Year +
+                    "\n" +
+
+                    "Evidence: " +
+                    x.Evidence +
+                    "\n" +
+
+                    "Evidence Point: " +
+                    ep +
+                    "\n" +
+
+                    "Evidence Type: " +
+                    x.EvidenceType +
+                    "\n" +
+
+                    "Rating: " +
+                    x.Rating +
+                    "\n\n" +
+
+                    respondentsBlock;
+
+                // --------------------------------------------------------
+                // GET FILE PATHS
+                // --------------------------------------------------------
+
+                List<string> filePaths =
+                    new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(x.EvidencePathCSV))
+                {
+                    string[] paths =
+                        x.EvidencePathCSV.Split(
+                            new[] { ',' },
+                            StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string rawPath in paths)
+                    {
+                        string path =
+                            rawPath.Trim().Trim('"');
+
+                        if (File.Exists(path))
+                        {
+                            filePaths.Add(path);
+                        }
+                        else if (Directory.Exists(path))
+                        {
+                            filePaths.AddRange(
+                                Directory.GetFiles(path));
+                        }
+                    }
+                }
+
+                // --------------------------------------------------------
+                // ONE ROW ONLY
+                // --------------------------------------------------------
+
+                int rowIndex =
+                    TimelineGrid.Rows.Add();
+
+                TimelineGrid.Rows[rowIndex]
+                    .Cells[0]
+                    .Value =
+                        new TimelineCellData
+                        {
+                            Text = timelineText,
+                            FilePaths = filePaths
+                        };
+            }
 
             TimelineGrid.ClearSelection();
         }
-
         // ============================================================
         // EXISTING DESIGNER EVENTS
         // ============================================================
@@ -772,10 +778,35 @@ namespace Legal_system
         {
         }
 
+
         private void TimelineGrid_CellContentClick(
-            object sender,
-            DataGridViewCellEventArgs e)
+    object sender,
+    DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0 ||
+                e.ColumnIndex < 0)
+                return;
+
+            DataGridViewCell cell =
+                TimelineGrid.Rows[e.RowIndex]
+                    .Cells[e.ColumnIndex];
+
+            if (cell is DataGridViewLinkCell)
+            {
+                string path =
+                    cell.Tag as string;
+
+                if (!string.IsNullOrWhiteSpace(path) &&
+                    File.Exists(path))
+                {
+                    System.Diagnostics.Process.Start(
+                        new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = path,
+                            UseShellExecute = true
+                        });
+                }
+            }
         }
     }
 
@@ -783,6 +814,13 @@ namespace Legal_system
     // FILTER OBJECT
     // ================================================================
 
+    public class TimelineCellData
+    {
+        public string Text { get; set; }
+
+        public List<string> FilePaths { get; set; }
+            = new List<string>();
+    }
     public class TimelineFilter
     {
         public string Type { get; set; }

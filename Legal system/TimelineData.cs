@@ -25,6 +25,8 @@ namespace Legal_system
         public string LegislationDescription { get; set; } //to be found through legislation name and fetched in code logic for searching
 
         public int Rating { get; set; } //the rating from evidence, to be encoded to and get point in code (not needed for filtering)
+
+        public string EvidencePathCSV { get; set; }
         ////NOTE. via drop down
         ///
         //public int EvidenceRating { get; set; } //the rating from evidence

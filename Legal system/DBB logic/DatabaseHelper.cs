@@ -220,7 +220,7 @@ public class DatabaseHelper
                         ce.respondentsLegal,
                         e.type,
                         e.rating,
-                        l.meaning_text
+                        e.file_path
                     FROM CaseEvent ce
                     LEFT JOIN Evidence e ON e.id = ce.evidence_id
                     LEFT JOIN Legislation l ON l.name = ce.respondentsLegal
@@ -244,7 +244,11 @@ public class DatabaseHelper
 
                             LegislationDescription = reader.IsDBNull(6) ? "" : reader.GetString(6),
 
-                            Rating = reader.IsDBNull(5) ? 0 : reader.GetInt32(5)
+                            Rating = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+
+                            EvidencePathCSV = reader.IsDBNull(6) ? "" : reader.GetString(6)
+
+
                         };
 
                         list.Add(data);

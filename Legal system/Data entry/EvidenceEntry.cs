@@ -54,5 +54,25 @@ namespace Legal_system.Data_entry
         {
 
         }
+
+        private void textBox2_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Multiselect = true;
+                dialog.Title = "Select Evidence Files";
+                dialog.Filter = "All Files (*.*)|*.*";
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Convert selected files into CSV
+                    string csv = string.Join(",", dialog.FileNames);
+
+                    // Display CSV in the textbox
+                    textBox2.Text = csv;
+                }
+            }
+        }
+
     }
 }
